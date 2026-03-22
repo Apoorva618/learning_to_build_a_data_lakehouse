@@ -1,4 +1,5 @@
 
+# Using Databricks for analysis and creating dashboards
 
 ## ER diagram
 
@@ -19,3 +20,5 @@
 - How to turn queries into visuals
 - How to build dashboards based on user requirements
 - How to chat with my data using AI Genie
+
+# Using Databricks to design a lakehouse
