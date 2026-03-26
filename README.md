@@ -49,3 +49,9 @@ Look within
 - Which products have the highest profit margins? Can we discontinue some SKUs based on demand and sales? 
 - Is there a latency in their supply chain? What's their average order fulfillment time? Can they make it faster?
 - How price sensitive are their customers? Run an experiment: increase the price of a product by a little in one market and monitor how it affects sales
+
+  ## What can I improve in the pipeline?
+
+- make a function for data quality checks ( nulls, duplicates, row counts)
+- make a config file for business rules ( which columns can be connected, what does it mean if a KPI is null or 0 and can it be removed from the final dataset)
+- write descriptions for each table and columns so that the AI works better 
