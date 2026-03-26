@@ -1,0 +1,451 @@
+{
+  "datasets": [
+    {
+      "name": "f678b4f3",
+      "displayName": "Untitled dataset",
+      "queryLines": [
+        "USE CATALOG `workspace`;\n",
+        "USE SCHEMA `salesdb`;\n",
+        "\n",
+        "select count(distinct customer_key) as TotalCustomers\n",
+        "from workspace.salesdb.dim_customers"
+      ]
+    },
+    {
+      "name": "bb7c51e6",
+      "displayName": "Untitled dataset",
+      "queryLines": [
+        "USE CATALOG `workspace`;\n",
+        "USE SCHEMA `salesdb`;\n",
+        "\n",
+        "-- Average sales per customer \n",
+        "WITH CustomerSales AS (\n",
+        "    SELECT\n",
+        "        dim_customers.customer_id,\n",
+        "        SUM(fact_sales.price * fact_sales.quantity) AS TotalSales\n",
+        "    FROM\n",
+        "        fact_sales\n",
+        "    JOIN\n",
+        "        dim_customers ON fact_sales.customer_key = dim_customers.customer_key\n",
+        "    GROUP BY\n",
+        "        dim_customers.customer_id\n",
+        ")\n",
+        "SELECT\n",
+        "    AVG(TotalSales) AS AverageSalesPerCustomer\n",
+        "FROM\n",
+        "    CustomerSales;\n"
+      ]
+    },
+    {
+      "name": "b8dc342b",
+      "displayName": "Untitled dataset",
+      "queryLines": [
+        "USE CATALOG `workspace`;\n",
+        "USE SCHEMA `salesdb`;\n",
+        "\n",
+        "select count(distinct order_number) as total_orders\n",
+        "from workspace.salesdb.fact_sales"
+      ]
+    },
+    {
+      "name": "387aed49",
+      "displayName": "Untitled dataset",
+      "queryLines": [
+        "USE CATALOG `workspace`;\n",
+        "USE SCHEMA `salesdb`;\n",
+        "\n",
+        "WITH ranked_customers AS (\n",
+        "  SELECT\n",
+        "    c.`customer_key`,\n",
+        "    c.`customer_id`,\n",
+        "    c.`customer_number`,\n",
+        "    c.`first_name`,\n",
+        "    c.`last_name`,\n",
+        "    SUM(s.`sales_amount`) AS total_sales,\n",
+        "    RANK() OVER (ORDER BY SUM(s.`sales_amount`) DESC) AS sales_rank\n",
+        "  FROM\n",
+        "    `workspace`.`salesdb`.`fact_sales` s\n",
+        "      JOIN `workspace`.`salesdb`.`dim_customers` c\n",
+        "        ON s.`customer_key` = c.`customer_key`\n",
+        "  WHERE\n",
+        "    s.`sales_amount` IS NOT NULL\n",
+        "    AND s.`customer_key` IS NOT NULL\n",
+        "  GROUP BY\n",
+        "    c.`customer_key`,\n",
+        "    c.`customer_id`,\n",
+        "    c.`customer_number`,\n",
+        "    c.`first_name`,\n",
+        "    c.`last_name`\n",
+        ")\n",
+        "SELECT\n",
+        "  *\n",
+        "FROM\n",
+        "  ranked_customers\n",
+        "WHERE\n",
+        "  sales_rank <= 10\n",
+        "ORDER BY\n",
+        "  sales_rank;"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "f3172309",
+      "displayName": "Untitled Page",
+      "layout": [
+        {
+          "widget": {
+            "name": "6f29fa14",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "f678b4f3",
+                  "fields": [
+                    {
+                      "name": "TotalCustomers",
+                      "expression": "`TotalCustomers`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Total Number of Customers",
+                "showTitle": true,
+                "description": "",
+                "showDescription": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "TotalCustomers",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "none",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 0
+                    }
+                  },
+                  "rowNumber": 1
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 5,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "0f4fd72e",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "bb7c51e6",
+                  "fields": [
+                    {
+                      "name": "AverageSalesPerCustomer",
+                      "expression": "`AverageSalesPerCustomer`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Average Sales per Customer",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "AverageSalesPerCustomer",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "none",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 0
+                    }
+                  },
+                  "rowNumber": 1
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 5,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "2e43b3d9",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "b8dc342b",
+                  "fields": [
+                    {
+                      "name": "total_orders",
+                      "expression": "`total_orders`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "# of Orders ",
+                "showTitle": true,
+                "description": "# of Orders",
+                "showDescription": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "total_orders",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "none",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 0
+                    }
+                  },
+                  "rowNumber": 1
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 4,
+            "width": 5,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "d91de904",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "387aed49",
+                  "fields": [
+                    {
+                      "name": "customer_key",
+                      "expression": "`customer_key`"
+                    },
+                    {
+                      "name": "customer_id",
+                      "expression": "`customer_id`"
+                    },
+                    {
+                      "name": "customer_number",
+                      "expression": "`customer_number`"
+                    },
+                    {
+                      "name": "first_name",
+                      "expression": "`first_name`"
+                    },
+                    {
+                      "name": "last_name",
+                      "expression": "`last_name`"
+                    },
+                    {
+                      "name": "total_sales",
+                      "expression": "`total_sales`"
+                    },
+                    {
+                      "name": "sales_rank",
+                      "expression": "`sales_rank`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "rowsPerPage": 25,
+              "displayRowNumbers": false,
+              "frame": {
+                "title": "Top 10 Customers by Sales",
+                "showTitle": true
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "customer_key",
+                    "useForSearch": false,
+                    "format": {
+                      "type": "numeral.js",
+                      "format": "0"
+                    },
+                    "actions": {
+                      "hover": {
+                        "type": "tooltip",
+                        "tooltipTemplate": "{{ @ }}"
+                      }
+                    }
+                  },
+                  {
+                    "fieldName": "customer_id",
+                    "useForSearch": false,
+                    "format": {
+                      "type": "numeral.js",
+                      "format": "0"
+                    },
+                    "actions": {
+                      "hover": {
+                        "type": "tooltip",
+                        "tooltipTemplate": "{{ @ }}"
+                      }
+                    }
+                  },
+                  {
+                    "fieldName": "customer_number",
+                    "useForSearch": false,
+                    "actions": {
+                      "hover": {
+                        "type": "tooltip",
+                        "tooltipTemplate": "{{ @ }}"
+                      }
+                    }
+                  },
+                  {
+                    "fieldName": "first_name",
+                    "useForSearch": false,
+                    "actions": {
+                      "hover": {
+                        "type": "tooltip",
+                        "tooltipTemplate": "{{ @ }}"
+                      }
+                    }
+                  },
+                  {
+                    "fieldName": "last_name",
+                    "useForSearch": false,
+                    "actions": {
+                      "hover": {
+                        "type": "tooltip",
+                        "tooltipTemplate": "{{ @ }}"
+                      }
+                    }
+                  },
+                  {
+                    "fieldName": "total_sales",
+                    "useForSearch": false,
+                    "format": {
+                      "type": "numeral.js",
+                      "format": "0"
+                    },
+                    "actions": {
+                      "hover": {
+                        "type": "tooltip",
+                        "tooltipTemplate": "{{ @ }}"
+                      }
+                    }
+                  },
+                  {
+                    "fieldName": "sales_rank",
+                    "useForSearch": false,
+                    "format": {
+                      "type": "numeral.js",
+                      "format": "0"
+                    },
+                    "actions": {
+                      "hover": {
+                        "type": "tooltip",
+                        "tooltipTemplate": "{{ @ }}"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 5,
+            "y": 0,
+            "width": 7,
+            "height": 7
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "c08bf4f9",
+      "displayName": "Global Filters",
+      "layout": [
+        {
+          "widget": {
+            "name": "7d054132",
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-single-select",
+              "encodings": {},
+              "frame": {
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 1,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "ae99e579",
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-single-select",
+              "encodings": {},
+              "frame": {
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 1,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_GLOBAL_FILTERS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}
